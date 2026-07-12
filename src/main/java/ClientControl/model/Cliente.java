@@ -1,5 +1,6 @@
 package ClientControl.model;
 
+import ClientControl.enums.StatusCliente;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,4 +26,17 @@ public class Cliente {
     private Double valor;
     private boolean pago;
     private LocalDate vencimento;
+
+    @Transient
+    public StatusCliente getStatus() {
+        if(this.pago) {
+            return StatusCliente.PAGO;
+        }
+
+        if(this.vencimento != null && LocalDate.now().isAfter(this.vencimento)) {
+            return StatusCliente.VENCIDO;
+        }
+
+        return StatusCliente.PENDENTE;
+    }
 }

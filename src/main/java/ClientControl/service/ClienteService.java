@@ -1,6 +1,7 @@
 package ClientControl.service;
 
 import ClientControl.DTO.ResumoDTO;
+import ClientControl.enums.StatusCliente;
 import ClientControl.model.Cliente;
 import ClientControl.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,10 @@ public class ClienteService {
        // Mostra o total pago e pendente
        double totalPago = 0;
        double totalPendente = 0;
+       double totalVencido = 0;
 
        for(Cliente cliente : todos) {
+           StatusCliente status = cliente.getStatus();
            if(cliente.isPago()) {
                totalPago += cliente.getValor();
            } else {
@@ -59,6 +62,6 @@ public class ClienteService {
        // Mostra o total para receber
        double totalGeral = totalPago + totalPendente;
 
-       return new ResumoDTO(totalClientes, totalPago, totalPendente, totalGeral);
+       return new ResumoDTO(totalClientes, totalPago, totalPendente, totalGeral, totalVencido);
     }
 }
