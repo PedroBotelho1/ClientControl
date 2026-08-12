@@ -45,23 +45,28 @@ public class ClienteService {
        List<Cliente> todos = repository.findAll();
        int totalClientes = todos.size();
 
-       // Mostra o total pago e pendente
+
        double totalPago = 0;
        double totalPendente = 0;
        double totalVencido = 0;
 
        for(Cliente cliente : todos) {
            StatusCliente status = cliente.getStatus();
-           if(cliente.isPago()) {
+
+           if(status == StatusCliente.PAGO) {
                totalPago += cliente.getValor();
-           } else {
+           } else if(status == StatusCliente.VENCIDO) {
+               totalVencido += cliente.getValor();
+           } else if(status == StatusCliente.PENDENTE) {
                totalPendente += cliente.getValor();
            }
        }
 
        // Mostra o total para receber
-       double totalGeral = totalPago + totalPendente;
+        double totalGeral = totalPago + totalPendente + totalVencido;
 
-       return new ResumoDTO(totalClientes, totalPago, totalPendente, totalGeral, totalVencido);
+        double totalFaltaReceber = totalPendente + totalVencido;
+
+        return new ResumoDTO(totalClientes, totalPago, totalPendente, totalGeral, totalVencido, totalFaltaReceber);
     }
 }

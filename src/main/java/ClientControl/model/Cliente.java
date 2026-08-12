@@ -32,7 +32,6 @@ public class Cliente {
         if(this.pago) {
             return StatusCliente.PAGO;
         }
-
         if(this.vencimento != null && LocalDate.now().isAfter(this.vencimento)) {
             return StatusCliente.VENCIDO;
         }

@@ -12,4 +12,5 @@ public class ResumoDTO {
     private double totalPendente;
     private double totalGeral;
     private double totalVencido;
+    private double totalFaltaReceber;
 }
