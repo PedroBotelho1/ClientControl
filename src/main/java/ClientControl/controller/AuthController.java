@@ -2,7 +2,8 @@ package ClientControl.controller;
 
 import ClientControl.DTO.LoginRequest;
 import ClientControl.DTO.LoginResponse;
-import ClientControl.model.Cliente;
+import ClientControl.DTO.RegisterRequest;
+import ClientControl.model.Usuario;
 import ClientControl.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,5 +22,12 @@ public class AuthController {
         LoginResponse response = service.login(request);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/registrar")
+    public ResponseEntity<Void> registrar(@RequestBody RegisterRequest request) {
+        service.registrar(request);
+
+        return ResponseEntity.status(201).build();
     }
 }
