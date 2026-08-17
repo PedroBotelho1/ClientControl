@@ -3,6 +3,7 @@ package ClientControl.service;
 import ClientControl.DTO.LoginRequest;
 import ClientControl.DTO.LoginResponse;
 import ClientControl.DTO.RegisterRequest;
+import ClientControl.exception.RegraDeNegocioException;
 import ClientControl.model.Usuario;
 import ClientControl.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         //  Tenta achar o e-mail no banco. Se não achar, lança a sua exceção.
         usuarioRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado com este e-mail."));
 
         // Se passou da linha de cima, o usuário existe. Segue com a autenticação normal.
         UsernamePasswordAuthenticationToken authToken =
@@ -49,7 +50,7 @@ public class AuthService {
     public Usuario registrar(RegisterRequest registerRequest) {
         // verifica se o email já existe no banco
         if(usuarioRepository.findByEmail(registerRequest.email()).isPresent()) {
-            throw new RuntimeException("Este email já está cadastrado no sistema!");
+            throw new RegraDeNegocioException("Este e-mail já está cadastrado!");
         }
 
        String senhaCriptografada = passwordEncoder.encode(registerRequest.senha());

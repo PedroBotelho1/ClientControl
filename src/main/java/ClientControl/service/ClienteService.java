@@ -2,6 +2,7 @@ package ClientControl.service;
 
 import ClientControl.DTO.ResumoDTO;
 import ClientControl.enums.StatusCliente;
+import ClientControl.exception.RegraDeNegocioException;
 import ClientControl.model.Cliente;
 import ClientControl.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class ClienteService {
 
     public Cliente togglePago(Long id) {
         Cliente cliente = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new RegraDeNegocioException("Cliente não encontrado."));
 
         cliente.setPago(!cliente.isPago());
         return repository.save(cliente);
