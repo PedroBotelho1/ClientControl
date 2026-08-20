@@ -3,6 +3,7 @@ package ClientControl.controller;
 import ClientControl.DTO.ResumoDTO;
 import ClientControl.model.Cliente;
 import ClientControl.service.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<Cliente> insert(@RequestBody Cliente obj) {
+    public ResponseEntity<Cliente> insert(@Valid @RequestBody Cliente obj) {
         obj = service.salvar(obj);
         return ResponseEntity.status(201).body(obj);
     }
