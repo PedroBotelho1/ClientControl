@@ -1,6 +1,7 @@
 package ClientControl.model;
 
 import ClientControl.enums.StatusCliente;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -40,6 +41,7 @@ public class Cliente {
     @NotNull(message = "O dia de vencimento é obrigatório.")
     private Integer diaVencimento;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cliente")
     private List<Mensalidade> mensalidades;
 

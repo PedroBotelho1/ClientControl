@@ -4,6 +4,7 @@ import ClientControl.enums.StatusCliente;
 import ClientControl.model.Mensalidade;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface MensalidadeRepository extends JpaRepository<Mensalidade, Long> {
@@ -18,4 +19,7 @@ public interface MensalidadeRepository extends JpaRepository<Mensalidade, Long> 
 
     // Verifica rapidamente se o cliente tem faturas pendentes/vencidas
     boolean existsByClienteIdAndStatus(Long clienteId, StatusCliente status);
+
+    // Busca todas as faturas que têm um status X e venceram antes de uma data Y
+    List<Mensalidade> findByStatusAndDataVencimentoBefore(StatusCliente status, LocalDate data);
 }

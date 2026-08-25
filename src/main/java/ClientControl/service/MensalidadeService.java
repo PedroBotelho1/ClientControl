@@ -111,4 +111,20 @@ public class MensalidadeService {
             }
         }
     }
+
+    // Roda todos os dias à 00:30 (meia-noite e trinta)
+    @Scheduled(cron = "0 30 0 * * ?")
+    public void atualizarMensalidadesVencidas() {
+        LocalDate hoje = LocalDate.now();
+
+        // Puxa do banco apenas as faturas que estão PENDENTES e que a data de vencimento já passou
+        List<Mensalidade> atrasadas = mensalidadeRepository
+                .findByStatusAndDataVencimentoBefore(StatusCliente.PENDENTE, hoje);
+
+        for (Mensalidade mensalidade : atrasadas) {
+            mensalidade.setStatus(StatusCliente.VENCIDO);
+            mensalidadeRepository.save(mensalidade);
+            System.out.println("Fatura atualizada para VENCIDO: " + mensalidade.getCliente().getNome());
+        }
+    }
 }

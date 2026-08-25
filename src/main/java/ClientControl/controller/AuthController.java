@@ -3,7 +3,6 @@ package ClientControl.controller;
 import ClientControl.DTO.LoginRequest;
 import ClientControl.DTO.LoginResponse;
 import ClientControl.DTO.RegisterRequest;
-import ClientControl.model.Usuario;
 import ClientControl.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

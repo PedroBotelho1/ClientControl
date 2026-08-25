@@ -40,7 +40,7 @@ public class AuthService {
 
         Authentication auth = authenticationManager.authenticate(authToken);
 
-        UserDetails user = (UserDetails) authToken.getPrincipal();
+        UserDetails user = (UserDetails) auth.getPrincipal();
 
         String token = jwtService.gerarToken(user);
 
