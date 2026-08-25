@@ -3,13 +3,15 @@ package ClientControl.model;
 import ClientControl.enums.StatusCliente;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "cliente")
@@ -29,21 +31,40 @@ public class Cliente {
     @NotBlank(message = "O nome da escola é obrigatório.")
     private String escola;
 
-    @NotBlank(message = "O valor da mensalidade é obrigatório.")
+    // Trocamos @NotBlank por @NotNull porque BigDecimal não é String
+    @NotNull(message = "O valor da mensalidade é obrigatório.")
     @Positive(message = "O valor da mensalidade deve ser maior que zero.")
-    private Double valor;
-    private boolean pago;
-    private LocalDate vencimento;
+    private BigDecimal valor;
+
+    // Trocamos o LocalDate por um número inteiro (ex: 5, 10, 20)
+    @NotNull(message = "O dia de vencimento é obrigatório.")
+    private Integer diaVencimento;
+
+    @OneToMany(mappedBy = "cliente")
+    private List<Mensalidade> mensalidades;
 
     @Transient
     public StatusCliente getStatus() {
-        if(this.pago) {
-            return StatusCliente.PAGO;
-        }
-        if(this.vencimento != null && LocalDate.now().isAfter(this.vencimento)) {
-            return StatusCliente.VENCIDO;
+        // Mudança aqui: Cliente novo entra como PENDENTE, pois precisa pagar o 1º mês para rodar
+        if (this.mensalidades == null || this.mensalidades.isEmpty()) {
+            return StatusCliente.PENDENTE;
         }
 
-        return StatusCliente.PENDENTE;
+        boolean temPendente = false;
+
+        for (Mensalidade mensalidade : this.mensalidades) {
+            if (mensalidade.getStatus() == StatusCliente.VENCIDO) {
+                return StatusCliente.VENCIDO;
+            }
+            if (mensalidade.getStatus() == StatusCliente.PENDENTE) {
+                temPendente = true;
+            }
+        }
+
+        if (temPendente) {
+            return StatusCliente.PENDENTE;
+        }
+
+        return StatusCliente.PAGO;
     }
 }

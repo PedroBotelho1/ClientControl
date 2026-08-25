@@ -30,12 +30,6 @@ public class ClienteController {
         return ResponseEntity.status(201).body(obj);
     }
 
-    @PatchMapping(value = "/{id}/toggle-pago")
-    public ResponseEntity<Cliente> togglePago(@PathVariable Long id) {
-        Cliente obj = service.togglePago(id);
-        return ResponseEntity.ok().body(obj);
-    }
-
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.deletar(id);

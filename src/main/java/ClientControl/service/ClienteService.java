@@ -8,8 +8,8 @@ import ClientControl.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClienteService {
@@ -27,46 +27,36 @@ public class ClienteService {
 
     public void deletar(Long id) {
         if(!repository.existsById(id)) {
-            throw new RuntimeException("Cliente não encontrado");
+            // Troquei para a sua RegraDeNegocioException para manter o padrão
+            throw new RegraDeNegocioException("Cliente não encontrado");
         }
         repository.deleteById(id);
     }
 
-    public Cliente togglePago(Long id) {
-        Cliente cliente = repository.findById(id)
-                .orElseThrow(() -> new RegraDeNegocioException("Cliente não encontrado."));
-
-        cliente.setPago(!cliente.isPago());
-        return repository.save(cliente);
-    }
-
     public ResumoDTO resumo() {
+        List<Cliente> todos = repository.findAll();
+        int totalClientes = todos.size();
 
-        // Mostra o total de clientes
-       List<Cliente> todos = repository.findAll();
-       int totalClientes = todos.size();
+        // Iniciando os valores com BigDecimal.ZERO
+        BigDecimal totalPago = BigDecimal.ZERO;
+        BigDecimal totalPendente = BigDecimal.ZERO;
+        BigDecimal totalVencido = BigDecimal.ZERO;
 
+        for(Cliente cliente : todos) {
+            StatusCliente status = cliente.getStatus();
 
-       double totalPago = 0;
-       double totalPendente = 0;
-       double totalVencido = 0;
+            if(status == StatusCliente.PAGO) {
+                totalPago = totalPago.add(cliente.getValor());
+            } else if(status == StatusCliente.VENCIDO) {
+                totalVencido = totalVencido.add(cliente.getValor());
+            } else if(status == StatusCliente.PENDENTE) {
+                totalPendente = totalPendente.add(cliente.getValor());
+            }
+        }
 
-       for(Cliente cliente : todos) {
-           StatusCliente status = cliente.getStatus();
-
-           if(status == StatusCliente.PAGO) {
-               totalPago += cliente.getValor();
-           } else if(status == StatusCliente.VENCIDO) {
-               totalVencido += cliente.getValor();
-           } else if(status == StatusCliente.PENDENTE) {
-               totalPendente += cliente.getValor();
-           }
-       }
-
-       // Mostra o total para receber
-        double totalGeral = totalPago + totalPendente + totalVencido;
-
-        double totalFaltaReceber = totalPendente + totalVencido;
+        // Somando os totais gerais
+        BigDecimal totalGeral = totalPago.add(totalPendente).add(totalVencido);
+        BigDecimal totalFaltaReceber = totalPendente.add(totalVencido);
 
         return new ResumoDTO(totalClientes, totalPago, totalPendente, totalGeral, totalVencido, totalFaltaReceber);
     }
